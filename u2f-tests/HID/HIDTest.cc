@@ -145,7 +145,7 @@ void test_LongEcho() {
   // Expected transfer times for 2ms bInterval.
   // We do not want fobs to be too slow or too agressive.
   CHECK_GE(sent, .020);
-  CHECK_LE(sent, .075);
+  CHECK_LE(sent, .11);
   CHECK_GE(received, .020);
   CHECK_LE(received, .075);
 }
