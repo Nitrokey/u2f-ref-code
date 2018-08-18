@@ -45,7 +45,7 @@
 #define CHECK_LT(a,b) do { if ((a)>=(b)) { std::cerr << "\x1b[31mCHECK_LT fail at " << CHECK_INFO#a << " >= "#b << ":\x1b[0m "; AbortOrNot(); }} while(0)
 #define CHECK_LE(a,b) do { if ((a)>(b)) { std::cerr << "\x1b[31mCHECK_LE fail at " << CHECK_INFO#a << " > "#b << ":\x1b[0m "; AbortOrNot(); }} while(0)
 
-#define PASS(x) do { (x); std::cout << "\x1b[32mPASS("#x")\x1b[0m" << std::endl; } while(0)
+#define PASS(x) do { std::cout << std::dec << __LINE__ << ": "; (x); std::cout << "\x1b[32mPASS("#x")\x1b[0m" << std::endl; } while(0)
 
 class U2F_info {
  public:
