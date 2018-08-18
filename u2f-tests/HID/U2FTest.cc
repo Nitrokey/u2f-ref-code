@@ -127,11 +127,13 @@ void test_Enroll(int expectedSW12 = 0x9000) {
   uint64_t t = 0; U2Fob_deltaTime(&t);
 
   string rsp;
+  const uint16_t apdu = U2Fob_apdu(device, 0, U2F_INS_REGISTER, U2F_AUTH_ENFORCE, 0,
+                               string(reinterpret_cast<char*>(&regReq),
+                               sizeof(regReq)),
+                               &rsp);
+  INFO << std::hex << expectedSW12 << " " << apdu;
   CHECK_EQ(expectedSW12,
-           U2Fob_apdu(device, 0, U2F_INS_REGISTER, U2F_AUTH_ENFORCE, 0,
-                      string(reinterpret_cast<char*>(&regReq),
-                             sizeof(regReq)),
-                      &rsp));
+           apdu);
 
   if (expectedSW12 != 0x9000) {
     CHECK_EQ(true, rsp.empty());
@@ -226,14 +228,15 @@ uint32_t test_Sign(int expectedSW12 = 0x9000, bool checkOnly = false) {
   uint64_t t = 0; U2Fob_deltaTime(&t);
 
   string rsp;
+  const uint16_t fob_apdu = U2Fob_apdu(device, 0, U2F_INS_AUTHENTICATE,
+                        checkOnly ? U2F_AUTH_CHECK_ONLY : U2F_AUTH_ENFORCE, 0,
+                                   string(reinterpret_cast<char*>(&authReq),
+                               U2F_NONCE_SIZE + U2F_APPID_SIZE + 1 +
+                               authReq.keyHandleLen),
+                                   &rsp);
+  INFO << std::hex << expectedSW12 << " " << fob_apdu;
   CHECK_EQ(expectedSW12,
-           U2Fob_apdu(device, 0, U2F_INS_AUTHENTICATE,
-                      checkOnly ? U2F_AUTH_CHECK_ONLY : U2F_AUTH_ENFORCE, 0,
-                      string(reinterpret_cast<char*>(&authReq),
-                             U2F_NONCE_SIZE + U2F_APPID_SIZE + 1 +
-                             authReq.keyHandleLen),
-                      &rsp));
-
+           fob_apdu);
   if (expectedSW12 != 0x9000) {
     CHECK_EQ(true, rsp.empty());
     return 0;

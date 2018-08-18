@@ -411,6 +411,7 @@ bool getCertificate(const U2F_REGISTER_RESP& rsp,
                     std::string* cert) {
   size_t hkLen = rsp.keyHandleLen;
 
+  INFO << "hkLen: " << hkLen;
   CHECK_GE(hkLen, 64);
   CHECK_LT(hkLen, sizeof(rsp.keyHandleCertSig));
 
