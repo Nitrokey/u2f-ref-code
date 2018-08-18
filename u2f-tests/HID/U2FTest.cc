@@ -328,56 +328,67 @@ int main(int argc, char* argv[]) {
   CHECK_EQ(0, U2Fob_open(device, arg_DeviceName));
   CHECK_EQ(0, U2Fob_init(device));
 
-  PASS(check_Compilation());
-
-  PASS(test_Version());
-  PASS(test_UnknownINS());
-  PASS(test_WrongLength_U2F_VERSION());
-  PASS(test_WrongLength_U2F_REGISTER());
-  PASS(test_BadCLA());
-
-  // Fob with button should need touch.
-  if (arg_hasButton) PASS(test_Enroll(0x6985));
-
-  WaitForUserPresence(device, arg_hasButton);
-
-  PASS(test_Enroll(0x9000));
-
-  // Fob with button should have consumed touch.
-  if (arg_hasButton) PASS(test_Sign(0x6985));
-
-  // Sign with check only should not produce signature.
-  PASS(test_Sign(0x6985, true));
-
-  // Sign with wrong hk.
-  regRsp.keyHandleCertSig[0] ^= 0x55;
-  PASS(test_Sign(0x6a80));
-  regRsp.keyHandleCertSig[0] ^= 0x55;
-
-  // Sign with wrong appid.
-  regReq.appId[0] ^= 0xaa;
-  PASS(test_Sign(0x6a80));
-  regReq.appId[0] ^= 0xaa;
-
-  WaitForUserPresence(device, arg_hasButton);
-
-  // Sign with check only should not produce signature.
-  PASS(test_Sign(0x6985, true));
-
   uint32_t ctr1;
-  PASS(ctr1 = test_Sign(0x9000)); // 368: test_Sign[237]: 9000 ff81 ???
-  PASS(test_Sign(0x6985)); // button ignities itself
-
-  WaitForUserPresence(device, arg_hasButton);
-
   uint32_t ctr2;
-  PASS(ctr2 = test_Sign(0x9000));
+
+  for (int i=0; i<100; i++){
+    std::cout << std::dec <<"ITER "<< i << std::endl;
+    PASS(check_Compilation());
+
+    PASS(test_Version());
+    PASS(test_UnknownINS());
+    PASS(test_WrongLength_U2F_VERSION());
+    PASS(test_WrongLength_U2F_REGISTER());
+    PASS(test_BadCLA());
+
+    // Fob with button should need touch.
+//    if (arg_hasButton) PASS(test_Enroll(0x6985));
+
+//    WaitForUserPresence(device, arg_hasButton);
+
+    PASS(test_Enroll(0x9000));
+
+    // Fob with button should have consumed touch.
+//    if (arg_hasButton) PASS(test_Sign(0x6985));
+
+    // Sign with check only should not produce signature.
+    PASS(test_Sign(0x6985, true));
+
+    // Sign with wrong hk.
+    regRsp.keyHandleCertSig[0] ^= 0x55;
+    PASS(test_Sign(0x6a80));
+    regRsp.keyHandleCertSig[0] ^= 0x55;
+
+    // Sign with wrong appid.
+    regReq.appId[0] ^= 0xaa;
+    PASS(test_Sign(0x6a80));
+    regReq.appId[0] ^= 0xaa;
+
+//    WaitForUserPresence(device, arg_hasButton);
+
+    // Sign with check only should not produce signature.
+    PASS(test_Sign(0x6985, true));
+
+    PASS(ctr1 = test_Sign(0x9000)); // 368: test_Sign[237]: 9000 ff81 ???
+    PASS(ctr2 = test_Sign(0x9000));
+    CHECK_EQ(ctr2, ctr1 + 1);
+
+    regRsp.keyHandleLen -= 8; // perturb keyhandle length
+    PASS(test_Sign(0x6700, false));
+
+  }
+
+//  PASS(test_Sign(0x6985)); // button ignities itself
+
+//  WaitForUserPresence(device, arg_hasButton);
+
+//  PASS(ctr2 = test_Sign(0x9000));
 
   // Ctr should have incremented by 1.
-  CHECK_EQ(ctr2, ctr1 + 1);
+//  CHECK_EQ(ctr2, ctr1 + 1);
 
-  regRsp.keyHandleLen -= 8; // perturb keyhandle length
-  PASS(test_Sign(0x6700, false));
+//  regRsp.keyHandleLen -= 8; // perturb keyhandle length
+//  PASS(test_Sign(0x6700, false));
 
   U2Fob_destroy(device);
   return 0;
