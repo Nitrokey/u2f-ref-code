@@ -365,8 +365,8 @@ int main(int argc, char* argv[]) {
   PASS(test_Sign(0x6985, true));
 
   uint32_t ctr1;
-  PASS(ctr1 = test_Sign(0x9000));
-  PASS(test_Sign(0x6985));
+  PASS(ctr1 = test_Sign(0x9000)); // 368: test_Sign[237]: 9000 ff81 ???
+  PASS(test_Sign(0x6985)); // button ignities itself
 
   WaitForUserPresence(device, arg_hasButton);
 
