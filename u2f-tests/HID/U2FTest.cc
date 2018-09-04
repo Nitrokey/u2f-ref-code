@@ -381,7 +381,8 @@ int main(int argc, char* argv[]) {
 
     regRsp.keyHandleLen -= 8; // perturb keyhandle length
     PASS(test_Sign(0x6700, false));
-
+    regRsp.keyHandleLen = MAX_KH_SIZE;
+    PASS(test_Sign(0x6700, false));
   }
 
 //  PASS(test_Sign(0x6985)); // button ignities itself
