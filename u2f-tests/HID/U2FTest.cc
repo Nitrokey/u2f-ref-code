@@ -359,6 +359,12 @@ int main(int argc, char* argv[]) {
     PASS(test_Sign(0x6a80));
     regRsp.keyHandleCertSig[0] ^= 0x55;
 
+    INFO << "Sign with altered last byte of hk";
+    regRsp.keyHandleCertSig[regRsp.keyHandleLen-1] ^= 0x55;
+    PASS(test_Sign(0x6a80));
+    regRsp.keyHandleCertSig[regRsp.keyHandleLen-1] ^= 0x55;
+
+
     // Sign with wrong appid.
     regReq.appId[0] ^= 0xaa;
     PASS(test_Sign(0x6a80));
