@@ -16,6 +16,7 @@
 #include <string>
 
 #include "u2f_util.h"
+#include "u2f_hid.h"
 
 // This is a "library"; do not abort.
 #define AbortOrNot() \
@@ -340,6 +341,18 @@ int U2Fob_recv(struct U2Fob* device, uint8_t* cmd,
     totalLen -= frameLen;
     pData += frameLen;
   }
+/*
+  if (FRAME_TYPE(frame) != TYPE_CONT) return result;
+  // check, if last frame is filled with zeroes
+  size_t x = 0;
+  for (size_t i = frameLen; i < sizeof(frame.cont.data); ++i) {
+    INFO <<  std::dec << i << " " << std::hex << (int) frame.cont.data[i];
+    if (frame.cont.data[i]!= 0 && x == 0){
+      x = frame.cont.data[i];
+    }
+  }
+  CHECK_EQ(frame.cont.data[x], 0);
+*/
 
   return result;
 }
