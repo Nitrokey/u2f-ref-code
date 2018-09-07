@@ -45,7 +45,7 @@
 #define CHECK_LT(a,b) do { if ((a)>=(b)) { std::cerr << "\x1b[31mCHECK_LT fail at " << CHECK_INFO#a << " >= "#b << ":\x1b[0m "; AbortOrNot(); }} while(0)
 #define CHECK_LE(a,b) do { if ((a)>(b)) { std::cerr << "\x1b[31mCHECK_LE fail at " << CHECK_INFO#a << " > "#b << ":\x1b[0m "; AbortOrNot(); }} while(0)
 
-#define PASS(x) do { std::cout << std::dec << __LINE__ << ": "; (x); std::cout << "\x1b[32mPASS("#x")\x1b[0m" << std::endl; } while(0)
+#define PASS(x) do { std::cerr << std::dec << __LINE__ << ": " << #x << std::endl; (x); std::cerr << "\x1b[32mPASS("#x")\x1b[0m" << std::endl; } while(0)
 
 class U2F_info {
  public:
@@ -96,6 +96,9 @@ int U2Fob_reopen(struct U2Fob* device);
 int U2Fob_init(struct U2Fob* device);
 
 uint32_t U2Fob_getCid(struct U2Fob* device);
+
+void U2Fob_logFrame(struct U2Fob* device,
+                    const char* tag, const U2FHID_FRAME* f);
 
 int U2Fob_sendHidFrame(struct U2Fob* device, U2FHID_FRAME* out);
 

@@ -65,6 +65,43 @@ struct U2Fob* device;
 U2F_REGISTER_REQ regReq;
 U2F_REGISTER_RESP regRsp;
 
+#include "u2f_util.h"
+
+int test_RNG(){
+  uint8_t d[sizeof(U2FHID_FRAME) + 1];
+  uint8_t r[sizeof(U2FHID_FRAME) + 1];
+  int res;
+  float to = 2;
+
+//  U2Fob_logFrame(device, "<", (U2FHID_FRAME*)r);
+
+//  if (res == sizeof(d)) {
+//    return 0;
+//  }
+
+
+//  if (!device->dev) return -ERR_OTHER;
+  memset(d, 0x00, sizeof(d));
+
+  uint8_t cmd [] = {0xFF, 0xFF,0xFF,0xFF, 0x21, 0, 0};
+  memmove(d+1, cmd, sizeof(cmd));
+
+  d[0] = 0;  // un-numbered report
+  if (!device->dev) return -ERR_OTHER;
+  res = hid_write(device->dev, d, sizeof(d));
+  U2Fob_logFrame(device, ">", (U2FHID_FRAME*)d);
+
+
+  memset(r, 0xEE, sizeof(r));
+  res = hid_read_timeout(device->dev,
+                             (uint8_t*) r, sizeof(U2FHID_FRAME),
+                             (int) (to * 1000));
+  U2Fob_logFrame(device, "<", (U2FHID_FRAME*)r);
+
+
+  return -ERR_OTHER;
+}
+
 void test_Version() {
   string rsp;
   int res = U2Fob_apdu(device, 0, U2F_INS_VERSION, 0, 0, "", &rsp);
@@ -307,7 +344,7 @@ int main(int argc, char* argv[]) {
     if (!strncmp(argv[argc], "-V", 2)) {
       // Log everything.
       arg_Verbose |= 2;
-      U2Fob_setLog(device, stdout, -1);
+      U2Fob_setLog(device, stderr, -1);
     }
     if (!strncmp(argv[argc], "-a", 2)) {
       // Don't abort, try continue;
@@ -331,6 +368,12 @@ int main(int argc, char* argv[]) {
   PASS(check_Compilation());
 
   PASS(test_Version());
+
+  PASS(test_RNG());
+  PASS(test_Version());
+
+  return 0;
+
   PASS(test_UnknownINS());
   PASS(test_WrongLength_U2F_VERSION());
   PASS(test_WrongLength_U2F_REGISTER());

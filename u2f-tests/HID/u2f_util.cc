@@ -151,7 +151,7 @@ void U2Fob_setLog(struct U2Fob* device, FILE* fd, int level) {
   U2Fob_deltaTime(&device->logtime);
 }
 
-static
+//static
 void U2Fob_logFrame(struct U2Fob* device,
                     const char* tag, const U2FHID_FRAME* f) {
   if (device->logfp) {
